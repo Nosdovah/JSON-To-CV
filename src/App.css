@@ -90,11 +90,38 @@
   margin-bottom: 16px;
 }
 
+.panel-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .panel-header h2 {
   font-size: 16px;
   font-weight: 600;
   margin: 0;
   color: var(--text-color);
+}
+
+.upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-btn:hover {
+  background-color: #f1f5f9;
+  color: var(--primary-color);
+  border-color: var(--primary-color);
 }
 
 .error-badge {
