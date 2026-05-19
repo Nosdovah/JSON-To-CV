@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import CVPreview from './components/CVPreview';
 import JSONEditor from './components/JSONEditor';
-import { Download, FileJson, Upload } from 'lucide-react';
+import { Download, Upload } from 'lucide-react';
 import defaultData from './data/defaultData.json';
 import './App.css';
 
@@ -9,7 +9,18 @@ function App() {
   const [cvData, setCvData] = useState(defaultData);
   const [jsonText, setJsonText] = useState(JSON.stringify(defaultData, null, 2));
   const [error, setError] = useState('');
+  const [warning, setWarning] = useState('');
   const fileInputRef = useRef(null);
+
+  const checkSchema = (data) => {
+    if (!data || typeof data !== 'object') return 'Should be a JSON object';
+    const suggestedSections = ['basics', 'work', 'education', 'skills'];
+    const missing = suggestedSections.filter(key => !(key in data));
+    if (missing.length > 0) {
+      return `Missing recommended sections: ${missing.join(', ')}`;
+    }
+    return '';
+  };
 
   const handleJsonChange = (text) => {
     setJsonText(text);
@@ -17,8 +28,12 @@ function App() {
       const parsed = JSON.parse(text);
       setCvData(parsed);
       setError('');
+      
+      const schemaWarning = checkSchema(parsed);
+      setWarning(schemaWarning);
     } catch (err) {
-      setError('Invalid JSON format');
+      setError('Invalid JSON syntax');
+      setWarning('');
     }
   };
 
@@ -38,8 +53,12 @@ function App() {
         setJsonText(JSON.stringify(parsed, null, 2));
         setCvData(parsed);
         setError('');
+        
+        const schemaWarning = checkSchema(parsed);
+        setWarning(schemaWarning);
       } catch (err) {
-        setError('Invalid JSON format in uploaded file');
+        setError('Invalid JSON format in file');
+        setWarning('');
       }
     };
     reader.readAsText(file);
@@ -57,8 +76,8 @@ function App() {
     <div className="app-container">
       <header className="app-header">
         <div className="logo">
-          <FileJson size={28} className="logo-icon" />
-          <h1>CVGenius</h1>
+          <img src="/JSON-DOCIFY-Photoroom.png" alt="JSON-DOCIFY Logo" className="logo-img" />
+          <h1>JSON-DOCIFY</h1>
         </div>
         <button className="export-btn" onClick={handlePrint}>
           <Download size={18} />
@@ -72,6 +91,7 @@ function App() {
             <div className="panel-header-left">
               <h2>JSON Data</h2>
               {error && <span className="error-badge">{error}</span>}
+              {warning && !error && <span className="warning-badge">{warning}</span>}
             </div>
             <button className="upload-btn" onClick={triggerFileUpload} title="Upload JSON File">
               <Upload size={16} />

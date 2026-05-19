@@ -26,8 +26,10 @@
   gap: 12px;
 }
 
-.logo-icon {
-  color: var(--primary-color);
+.logo-img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
 }
 
 .logo h1 {
@@ -132,6 +134,16 @@
   font-size: 12px;
   font-weight: 600;
   border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.warning-badge {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 .preview-panel {
