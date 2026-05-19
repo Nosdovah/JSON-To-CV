@@ -1,0 +1,58 @@
+{
+  "basics": {
+    "name": "Jane Doe",
+    "label": "Full Stack Developer",
+    "email": "jane.doe@example.com",
+    "phone": "+1 234 567 890",
+    "url": "https://janedoe.com",
+    "summary": "Innovative Full Stack Developer with 5+ years of experience in building scalable web applications. Passionate about creating elegant solutions to complex problems and delivering exceptional user experiences.",
+    "location": "San Francisco, CA"
+  },
+  "work": [
+    {
+      "company": "Tech Innovators Inc.",
+      "position": "Senior Software Engineer",
+      "startDate": "2020-05-01",
+      "endDate": "Present",
+      "highlights": [
+        "Architected and implemented a microservices architecture that improved system scalability by 40%.",
+        "Led a team of 5 developers in redesigning the core product platform.",
+        "Reduced load times by 60% through aggressive caching and optimization."
+      ]
+    },
+    {
+      "company": "Creative Solutions LLC",
+      "position": "Web Developer",
+      "startDate": "2018-01-15",
+      "endDate": "2020-04-30",
+      "highlights": [
+        "Developed custom e-commerce solutions for 20+ clients.",
+        "Implemented CI/CD pipelines, reducing deployment times by 75%.",
+        "Collaborated closely with the design team to ensure pixel-perfect implementations."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of California, Berkeley",
+      "area": "Computer Science",
+      "studyType": "Bachelor of Science",
+      "startDate": "2014-08-01",
+      "endDate": "2018-05-15"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Frontend",
+      "keywords": ["React", "Vue", "TypeScript", "Tailwind CSS", "HTML5", "CSS3"]
+    },
+    {
+      "name": "Backend",
+      "keywords": ["Node.js", "Express", "Python", "Django", "PostgreSQL", "MongoDB"]
+    },
+    {
+      "name": "DevOps & Tools",
+      "keywords": ["Docker", "Kubernetes", "AWS", "Git", "GitHub Actions"]
+    }
+  ]
+}
