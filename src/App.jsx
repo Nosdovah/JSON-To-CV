@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import CVPreview from './components/CVPreview';
 import JSONEditor from './components/JSONEditor';
+import FormEditor from './components/FormEditor';
 import { Download, Upload } from 'lucide-react';
 import defaultData from './data/defaultData.json';
 import './App.css';
@@ -8,6 +9,7 @@ import './App.css';
 function App() {
   const [cvData, setCvData] = useState(defaultData);
   const [jsonText, setJsonText] = useState(JSON.stringify(defaultData, null, 2));
+  const [editorMode, setEditorMode] = useState('json');
   const [error, setError] = useState('');
   const [warning, setWarning] = useState('');
   const fileInputRef = useRef(null);
@@ -35,6 +37,14 @@ function App() {
       setError('Invalid JSON syntax');
       setWarning('');
     }
+  };
+
+  const handleFormChange = (newData) => {
+    setCvData(newData);
+    setJsonText(JSON.stringify(newData, null, 2));
+    const schemaWarning = checkSchema(newData);
+    setWarning(schemaWarning);
+    setError('');
   };
 
   const handlePrint = () => {
@@ -89,7 +99,16 @@ function App() {
         <div className="editor-panel">
           <div className="panel-header">
             <div className="panel-header-left">
-              <h2>JSON Data</h2>
+              <div className="mode-toggle">
+                <button 
+                  className={`toggle-btn ${editorMode === 'json' ? 'active' : ''}`}
+                  onClick={() => setEditorMode('json')}
+                >JSON</button>
+                <button 
+                  className={`toggle-btn ${editorMode === 'form' ? 'active' : ''}`}
+                  onClick={() => setEditorMode('form')}
+                >Form</button>
+              </div>
               {error && <span className="error-badge">{error}</span>}
               {warning && !error && <span className="warning-badge">{warning}</span>}
             </div>
@@ -105,7 +124,11 @@ function App() {
               onChange={handleFileUpload}
             />
           </div>
-          <JSONEditor value={jsonText} onChange={handleJsonChange} />
+          {editorMode === 'json' ? (
+            <JSONEditor value={jsonText} onChange={handleJsonChange} />
+          ) : (
+            <FormEditor data={cvData} onChange={handleFormChange} />
+          )}
         </div>
 
         <div className="preview-panel">

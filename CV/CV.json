@@ -1,0 +1,125 @@
+{
+  "basics": {
+    "name": "Hanif",
+    "label": "Technical Project Manager | React E-commerce Specialist",
+    "email": "hanif@example.com",
+    "phone": "+6281234567890",
+    "url": "https://github.com/hanif",
+    "summary": "Technical Project Manager with 5 years of blended experience in digital business operations and frontend architecture. Specializing in the React ecosystem, I act as the technical bridge between business stakeholders and development vendors. Proven track record of translating complex e-commerce requirements into strict technical scopes, enforcing UAT protocols, and monitoring CI/CD deployments to prevent vendor overbilling and ensure scalable architecture.",
+    "location": "Bogor, West Java, Indonesia"
+  },
+  "work": [
+    {
+      "company": "Tech & E-commerce Clients (Freelance/Contract)",
+      "position": "Independent Technical Consultant / Lead Project Manager",
+      "startDate": "2024",
+      "endDate": "2026",
+      "summary": "Serve as primary technical liaison for high-stakes web commerce deployments, auditing vendor execution, managing timelines, and fixing critical workflow or pipeline blockers.",
+      "highlights": [
+        "Acted as the primary technical liaison for an e-commerce build, translating business requirements into precise React component specifications, reducing vendor miscommunication and revision cycles by 40%.",
+        "Engineered and executed comprehensive User Acceptance Testing (UAT) protocols covering authentication, complex cart state management, and payment gateway (Midtrans/Xendit) integration, ensuring 0 critical bugs at launch.",
+        "Audited vendor deployment strategies, enforcing staging-to-production CI/CD pipelines via Vercel and GitHub Actions to guarantee high availability during traffic spikes.",
+        "Mandated the use of optimized state management and data fetching (React Query) to the vendor, resulting in a highly performant frontend architecture that reduced server load."
+      ]
+    },
+    {
+      "company": "Various Collaborative Ventures",
+      "position": "Digital Product Analyst / Technical Lead",
+      "startDate": "2022",
+      "endDate": "2024",
+      "summary": "Oversaw frontend implementation and agile sprint processes for collaborative product launches and digital solutions.",
+      "highlights": [
+        "Built and maintained modular frontend architectures using React.js, translating UI/UX wireframes into functional, responsive web applications.",
+        "Managed 48-hour sprint deployments for digital product launches using Agile methodologies and tools like ClickUp and Discord for team orchestration.",
+        "Conducted analytical assessments (Importance-Performance Analysis and Pareto frameworks) on user data to dictate development priorities, ensuring engineering hours were spent on high-ROI features."
+      ]
+    },
+    {
+      "company": "Academic & Early Career Ventures",
+      "position": "IT Project Coordinator",
+      "startDate": "2021",
+      "endDate": "2022",
+      "summary": "Coordinated early system deployments and modular framework applications for enterprise planning simulations.",
+      "highlights": [
+        "Led a 5-person team in the end-to-end planning and simulated deployment of an ERP system (P Mart) for retail operations, managing modular presentation and execution scripts.",
+        "Coordinated project timelines, managed stakeholder expectations, and maintained rigorous documentation for digital infrastructure projects."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universitas Pakuan",
+      "area": "Digital Business",
+      "studyType": "Bachelor's Degree",
+      "startDate": "2022",
+      "endDate": "2026"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Vendor & Project Management",
+      "keywords": [
+        "Requirement Translation",
+        "Scope Enforcement",
+        "Sprint Planning",
+        "Jira",
+        "ClickUp",
+        "Trello",
+        "UAT Design"
+      ]
+    },
+    {
+      "name": "Frontend Architecture",
+      "keywords": [
+        "React.js",
+        "Next.js",
+        "TypeScript",
+        "Zustand",
+        "Redux Toolkit",
+        "TanStack Query (React Query)",
+        "TailwindCSS"
+      ]
+    },
+    {
+      "name": "Backend & Cloud Infrastructure",
+      "keywords": [
+        "Go (Golang)",
+        "PostgreSQL",
+        "Turso",
+        "Vercel",
+        "AWS CloudFront / S3",
+        "CI/CD Pipelines",
+        "GitHub Actions",
+        "Postman"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "VeritasGuard",
+      "roles": [
+        "Lead Security Researcher",
+        "Architect"
+      ],
+      "url": "https://github.com/hanif/veritasguard",
+      "description": "An AI-driven security automation tool designed for secure log analysis and threat remediation orchestration.",
+      "highlights": [
+        "Engineered high-performance Go-based concurrent processes to optimize log ingestion speeds.",
+        "Integrated Python-driven reasoning modules utilizing the Gemini API to intelligently classify threat vectors."
+      ]
+    },
+    {
+      "name": "Psych-Sentinel",
+      "roles": [
+        "Fullstack Engineer",
+        "Architect"
+      ],
+      "url": "https://github.com/hanif/psych-sentinel",
+      "description": "An automated workflow compliance and cognitive task monitoring dashboard.",
+      "highlights": [
+        "Utilized PostgreSQL and Turso databases for data persistence layer logging and relational integrity.",
+        "Designed a responsive React-based dashboard displaying real-time system health metrics and audit logs."
+      ]
+    }
+  ]
+}
