@@ -76,7 +76,7 @@ function App() {
     <div className="app-container">
       <header className="app-header">
         <div className="logo">
-          <img src="/JSON-DOCIFY-Photoroom.png" alt="JSON-DOCIFY Logo" className="logo-img" />
+          <img src={`${import.meta.env.BASE_URL}JSON-DOCIFY-Photoroom.png`} alt="JSON-DOCIFY Logo" className="logo-img" />
           <h1>JSON-DOCIFY</h1>
         </div>
         <button className="export-btn" onClick={handlePrint}>
