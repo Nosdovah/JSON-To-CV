@@ -13,9 +13,9 @@
 
 .cv-header {
   text-align: center;
-  border-bottom: 1px solid #333;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
+  border-bottom: 1.5px solid #000;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 .cv-name {
@@ -71,7 +71,7 @@
   letter-spacing: 1px;
   margin: 0 0 12px 0;
   padding-bottom: 4px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1.5px solid #000;
 }
 
 .section-content {
@@ -83,6 +83,7 @@
   line-height: 1.6;
   color: #222;
   margin: 0;
+  text-align: justify;
 }
 
 .skills-list {
@@ -95,6 +96,7 @@
   font-size: 14px;
   line-height: 1.5;
   color: #222;
+  text-align: justify;
 }
 
 .skill-item strong {
@@ -152,6 +154,7 @@
   line-height: 1.5;
   color: #222;
   margin: 0 0 6px 0;
+  text-align: justify;
 }
 
 .item-highlights {
@@ -160,6 +163,7 @@
   font-size: 14px;
   line-height: 1.5;
   color: #222;
+  text-align: justify;
 }
 
 .item-highlights li {
