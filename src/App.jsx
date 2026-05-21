@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import CVPreview from './components/CVPreview';
 import JSONEditor from './components/JSONEditor';
 import FormEditor from './components/FormEditor';
@@ -6,13 +6,42 @@ import { Download, Upload } from 'lucide-react';
 import defaultData from './data/defaultData.json';
 import './App.css';
 
+const SESSION_KEY = 'cv_builder_session_data';
+const SESSION_TIME_KEY = 'cv_builder_session_timestamp';
+const ONE_HOUR = 60 * 60 * 1000;
+
 function App() {
-  const [cvData, setCvData] = useState(defaultData);
-  const [jsonText, setJsonText] = useState(JSON.stringify(defaultData, null, 2));
+  const loadInitialData = () => {
+    try {
+      const savedTime = localStorage.getItem(SESSION_TIME_KEY);
+      if (savedTime && (Date.now() - parseInt(savedTime, 10) < ONE_HOUR)) {
+        const savedData = localStorage.getItem(SESSION_KEY);
+        if (savedData) {
+          return JSON.parse(savedData);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load session data", e);
+    }
+    return defaultData;
+  };
+
+  const initialData = loadInitialData();
+  const [cvData, setCvData] = useState(initialData);
+  const [jsonText, setJsonText] = useState(JSON.stringify(initialData, null, 2));
   const [editorMode, setEditorMode] = useState('json');
   const [error, setError] = useState('');
   const [warning, setWarning] = useState('');
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(SESSION_KEY, JSON.stringify(cvData));
+      localStorage.setItem(SESSION_TIME_KEY, Date.now().toString());
+    } catch (e) {
+      console.error("Failed to save session data", e);
+    }
+  }, [cvData]);
 
   const checkSchema = (data) => {
     if (!data || typeof data !== 'object') return 'Should be a JSON object';
