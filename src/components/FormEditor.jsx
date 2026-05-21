@@ -1,6 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import './FormEditor.css';
+
+const CommaSeparatedInput = ({ value, onChange, rows }) => {
+  const [localValue, setLocalValue] = useState(Array.isArray(value) ? value.join(', ') : '');
+
+  const handleChange = (e) => {
+    setLocalValue(e.target.value);
+    onChange(e.target.value);
+  };
+
+  useEffect(() => {
+    const currentParsed = localValue.split(',').map(s => s.trim()).filter(Boolean);
+    const newParsed = Array.isArray(value) ? value : [];
+    if (JSON.stringify(currentParsed) !== JSON.stringify(newParsed)) {
+      setLocalValue(newParsed.join(', '));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  if (rows) {
+    return <textarea rows={rows} value={localValue} onChange={handleChange}></textarea>;
+  }
+  return <input type="text" value={localValue} onChange={handleChange} />;
+};
 
 const FormEditor = ({ data, onChange }) => {
   // Ensure we have a valid object
@@ -117,7 +140,7 @@ const FormEditor = ({ data, onChange }) => {
             </div>
             <div className="form-group">
               <label>Highlights (comma separated)</label>
-              <textarea rows="3" value={(item.highlights || []).join(', ')} onChange={e => updateArrayItem('work', i, 'highlights', e.target.value)}></textarea>
+              <CommaSeparatedInput rows="3" value={item.highlights} onChange={val => updateArrayItem('work', i, 'highlights', val)} />
             </div>
           </div>
         ))}
@@ -182,7 +205,7 @@ const FormEditor = ({ data, onChange }) => {
             </div>
             <div className="form-group">
               <label>Keywords (comma separated)</label>
-              <input type="text" value={(item.keywords || []).join(', ')} onChange={e => updateArrayItem('skills', i, 'keywords', e.target.value)} />
+              <CommaSeparatedInput value={item.keywords} onChange={val => updateArrayItem('skills', i, 'keywords', val)} />
             </div>
           </div>
         ))}
@@ -213,7 +236,7 @@ const FormEditor = ({ data, onChange }) => {
             </div>
             <div className="form-group">
               <label>Roles (comma separated)</label>
-              <input type="text" value={(item.roles || []).join(', ')} onChange={e => updateArrayItem('projects', i, 'roles', e.target.value)} />
+              <CommaSeparatedInput value={item.roles} onChange={val => updateArrayItem('projects', i, 'roles', val)} />
             </div>
             <div className="form-group">
               <label>Description</label>
@@ -221,7 +244,7 @@ const FormEditor = ({ data, onChange }) => {
             </div>
             <div className="form-group">
               <label>Highlights (comma separated)</label>
-              <textarea rows="3" value={(item.highlights || []).join(', ')} onChange={e => updateArrayItem('projects', i, 'highlights', e.target.value)}></textarea>
+              <CommaSeparatedInput rows="3" value={item.highlights} onChange={val => updateArrayItem('projects', i, 'highlights', val)} />
             </div>
           </div>
         ))}
