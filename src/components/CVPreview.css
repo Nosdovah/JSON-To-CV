@@ -72,6 +72,8 @@
   margin: 0 0 12px 0;
   padding-bottom: 4px;
   border-bottom: 1.5px solid #000;
+  break-after: avoid;
+  page-break-after: avoid;
 }
 
 .section-content {
@@ -107,6 +109,8 @@
 .experience-item,
 .education-item {
   margin-bottom: 16px;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .experience-item:last-child,
@@ -173,7 +177,7 @@
 @media print {
   @page {
     size: A4 portrait;
-    margin: 0;
+    margin: 20mm;
   }
   
   body {
@@ -185,9 +189,10 @@
   .cv-document {
     box-shadow: none;
     border-radius: 0;
-    width: 210mm;
-    min-height: 297mm;
-    padding: 20mm;
+    width: 100%;
+    max-width: 100%;
+    min-height: auto;
+    padding: 0;
     margin: 0;
   }
 }
