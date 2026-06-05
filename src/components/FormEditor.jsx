@@ -1,18 +1,18 @@
 import { useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, GripVertical } from 'lucide-react';
 import './FormEditor.css';
 
-const CommaSeparatedInput = ({ value, onChange, rows }) => {
+const CommaSeparatedInput = ({ value, onChange, rows, separator = ',' }) => {
   const [prevValueStr, setPrevValueStr] = useState(() => JSON.stringify(value));
-  const [localValue, setLocalValue] = useState(() => Array.isArray(value) ? value.join(', ') : '');
+  const [localValue, setLocalValue] = useState(() => Array.isArray(value) ? value.join(`${separator} `) : '');
 
   const valueStr = JSON.stringify(value);
   if (valueStr !== prevValueStr) {
     setPrevValueStr(valueStr);
     const newParsed = Array.isArray(value) ? value : [];
-    const currentParsed = localValue.split(',').map(s => s.trim()).filter(Boolean);
+    const currentParsed = localValue.split(separator).map(s => s.trim()).filter(Boolean);
     if (JSON.stringify(currentParsed) !== JSON.stringify(newParsed)) {
-      setLocalValue(newParsed.join(', '));
+      setLocalValue(newParsed.join(`${separator} `));
     }
   }
 
@@ -30,10 +30,35 @@ const CommaSeparatedInput = ({ value, onChange, rows }) => {
 const FormEditor = ({ data, onChange }) => {
   // Ensure we have a valid object
   const formData = typeof data === 'object' && data !== null ? data : {};
+  const [dragItem, setDragItem] = useState(null);
 
   // Generic updater
   const updateSection = (section, newSectionData) => {
     onChange({ ...formData, [section]: newSectionData });
+  };
+
+  const handleDragStart = (e, section, index) => {
+    setDragItem({ section, index });
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, section, targetIndex) => {
+    e.preventDefault();
+    if (!dragItem || dragItem.section !== section || dragItem.index === targetIndex) {
+      return;
+    }
+    const list = Array.isArray(formData[section]) ? [...formData[section]] : [];
+    const [movedItem] = list.splice(dragItem.index, 1);
+    list.splice(targetIndex, 0, movedItem);
+    updateSection(section, list);
+    setDragItem(null);
+  };
+
+  const handleDragEnd = () => {
+    setDragItem(null);
   };
 
   const updateBasics = (field, value) => {
@@ -57,9 +82,10 @@ const FormEditor = ({ data, onChange }) => {
       item = { ...item };
     }
     
-    // For comma-separated keywords/roles/highlights
+    // For comma/semicolon-separated keywords/roles/highlights
     if ((field === 'keywords' || field === 'roles' || field === 'highlights') && typeof value === 'string') {
-      item[field] = value.split(',').map(s => s.trim()).filter(Boolean);
+      const sep = field === 'highlights' ? ';' : ',';
+      item[field] = value.split(sep).map(s => s.trim()).filter(Boolean);
     } else {
       item[field] = value;
     }
@@ -120,9 +146,20 @@ const FormEditor = ({ data, onChange }) => {
           </button>
         </div>
         {(Array.isArray(formData.work) ? formData.work : []).map((item, i) => (
-          <div key={i} className="form-card">
+          <div 
+            key={i} 
+            className={`form-card ${dragItem?.section === 'work' && dragItem.index === i ? 'dragging' : ''}`}
+            draggable
+            onDragStart={(e) => handleDragStart(e, 'work', i)}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, 'work', i)}
+            onDragEnd={handleDragEnd}
+          >
             <div className="form-card-header">
-              <h4>{item?.company || 'New Company'}</h4>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <GripVertical className="drag-handle" size={16} />
+                <h4>{item?.company || 'New Company'}</h4>
+              </div>
               <button className="icon-btn delete-btn" onClick={() => removeArrayItem('work', i)}><Trash2 size={16} /></button>
             </div>
             <div className="form-row">
@@ -150,8 +187,8 @@ const FormEditor = ({ data, onChange }) => {
               <textarea rows="2" value={item?.summary || ''} onChange={e => updateArrayItem('work', i, 'summary', e.target.value)}></textarea>
             </div>
             <div className="form-group">
-              <label>Highlights (comma separated)</label>
-              <CommaSeparatedInput rows="3" value={item?.highlights} onChange={val => updateArrayItem('work', i, 'highlights', val)} />
+              <label>Highlights (semicolon separated)</label>
+              <CommaSeparatedInput rows="3" separator=";" value={item?.highlights} onChange={val => updateArrayItem('work', i, 'highlights', val)} />
             </div>
           </div>
         ))}
@@ -165,9 +202,20 @@ const FormEditor = ({ data, onChange }) => {
           </button>
         </div>
         {(Array.isArray(formData.education) ? formData.education : []).map((item, i) => (
-          <div key={i} className="form-card">
+          <div 
+            key={i} 
+            className={`form-card ${dragItem?.section === 'education' && dragItem.index === i ? 'dragging' : ''}`}
+            draggable
+            onDragStart={(e) => handleDragStart(e, 'education', i)}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, 'education', i)}
+            onDragEnd={handleDragEnd}
+          >
             <div className="form-card-header">
-              <h4>{item?.institution || 'New Institution'}</h4>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <GripVertical className="drag-handle" size={16} />
+                <h4>{item?.institution || 'New Institution'}</h4>
+              </div>
               <button className="icon-btn delete-btn" onClick={() => removeArrayItem('education', i)}><Trash2 size={16} /></button>
             </div>
             <div className="form-row">
@@ -230,9 +278,20 @@ const FormEditor = ({ data, onChange }) => {
           </button>
         </div>
         {(Array.isArray(formData.projects) ? formData.projects : []).map((item, i) => (
-          <div key={i} className="form-card">
+          <div 
+            key={i} 
+            className={`form-card ${dragItem?.section === 'projects' && dragItem.index === i ? 'dragging' : ''}`}
+            draggable
+            onDragStart={(e) => handleDragStart(e, 'projects', i)}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, 'projects', i)}
+            onDragEnd={handleDragEnd}
+          >
             <div className="form-card-header">
-              <h4>{item?.name || 'New Project'}</h4>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <GripVertical className="drag-handle" size={16} />
+                <h4>{item?.name || 'New Project'}</h4>
+              </div>
               <button className="icon-btn delete-btn" onClick={() => removeArrayItem('projects', i)}><Trash2 size={16} /></button>
             </div>
             <div className="form-row">
@@ -254,8 +313,8 @@ const FormEditor = ({ data, onChange }) => {
               <textarea rows="2" value={item?.description || ''} onChange={e => updateArrayItem('projects', i, 'description', e.target.value)}></textarea>
             </div>
             <div className="form-group">
-              <label>Highlights (comma separated)</label>
-              <CommaSeparatedInput rows="3" value={item?.highlights} onChange={val => updateArrayItem('projects', i, 'highlights', val)} />
+              <label>Highlights (semicolon separated)</label>
+              <CommaSeparatedInput rows="3" separator=";" value={item?.highlights} onChange={val => updateArrayItem('projects', i, 'highlights', val)} />
             </div>
           </div>
         ))}
