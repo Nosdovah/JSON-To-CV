@@ -11,6 +11,9 @@
 *   **Dual Editor Modes**:
     *   **JSON Editor**: Real-time syntax highlighting and schema validation warning to keep your document structured.
     *   **Form Editor**: A user-friendly form interface with dynamic fields to build, edit, and reorganize CV entries on the fly.
+*   **ATS PDF Parser (Upload PDF)**: Upload an existing ATS resume PDF to automatically extract text (using client-side PDF parsing) and generate/populate the structured CV fields.
+*   **Drag & Drop Sorting**: Reorder items in the Work Experience, Education, and Projects sections using a smooth, native drag-and-drop system.
+*   **Semicolon Separator for Highlights**: Highlights are separated by semicolons (`;`) instead of commas, allowing you to use commas naturally inside your bullet point sentences.
 *   **Instant Live Preview**: A side-by-side view showing exactly how the document looks on an A4 canvas.
 *   **Perfect A4 PDF Export**: Specialized CSS `@media print` rules ensure page-break avoidance for logical sections (e.g., jobs or education entries aren't awkwardly sliced in half) and print margins match official A4 specifications.
 *   **Local Auto-Save**: Saves changes to `localStorage` automatically (1-hour session retention) so you won't lose progress on page refresh.
@@ -23,6 +26,7 @@
 *   **Framework**: [React](https://react.dev/) + [Vite](https://vite.dev/)
 *   **Styling**: Vanilla CSS (modular styles)
 *   **Icons**: [Lucide React](https://lucide.dev/)
+*   **PDF Parsing**: [pdfjs-dist](https://github.com/mozilla/pdf.js) (client-side text extraction)
 
 ---
 
@@ -40,6 +44,8 @@
     │   └── JSONEditor.css  # Styles for JSON text input area
     ├── data/
     │   └── defaultData.json# Starter CV template configuration
+    ├── utils/
+    │   └── pdfParser.js    # PDF text extractor and CV parser heuristic
     ├── App.jsx            # Main app shell and application logic
     ├── App.css            # Overall dashboard structure and general print overrides
     └── index.css          # Design system variables and typography resets
