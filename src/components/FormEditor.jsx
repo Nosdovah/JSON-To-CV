@@ -1,23 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import './FormEditor.css';
 
 const CommaSeparatedInput = ({ value, onChange, rows }) => {
-  const [localValue, setLocalValue] = useState(Array.isArray(value) ? value.join(', ') : '');
+  const [prevValueStr, setPrevValueStr] = useState(() => JSON.stringify(value));
+  const [localValue, setLocalValue] = useState(() => Array.isArray(value) ? value.join(', ') : '');
+
+  const valueStr = JSON.stringify(value);
+  if (valueStr !== prevValueStr) {
+    setPrevValueStr(valueStr);
+    const newParsed = Array.isArray(value) ? value : [];
+    const currentParsed = localValue.split(',').map(s => s.trim()).filter(Boolean);
+    if (JSON.stringify(currentParsed) !== JSON.stringify(newParsed)) {
+      setLocalValue(newParsed.join(', '));
+    }
+  }
 
   const handleChange = (e) => {
     setLocalValue(e.target.value);
     onChange(e.target.value);
   };
-
-  useEffect(() => {
-    const currentParsed = localValue.split(',').map(s => s.trim()).filter(Boolean);
-    const newParsed = Array.isArray(value) ? value : [];
-    if (JSON.stringify(currentParsed) !== JSON.stringify(newParsed)) {
-      setLocalValue(newParsed.join(', '));
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
 
   if (rows) {
     return <textarea rows={rows} value={localValue} onChange={handleChange}></textarea>;
@@ -35,7 +37,8 @@ const FormEditor = ({ data, onChange }) => {
   };
 
   const updateBasics = (field, value) => {
-    updateSection('basics', { ...(formData.basics || {}), [field]: value });
+    const basicsObj = (formData.basics && typeof formData.basics === 'object') ? formData.basics : {};
+    updateSection('basics', { ...basicsObj, [field]: value });
   };
 
   const addArrayItem = (section, defaultItem = {}) => {
@@ -45,15 +48,23 @@ const FormEditor = ({ data, onChange }) => {
 
   const updateArrayItem = (section, index, field, value) => {
     const list = Array.isArray(formData[section]) ? [...formData[section]] : [];
-    if (!list[index]) return;
+    if (index < 0 || index >= list.length) return;
+    
+    let item = list[index];
+    if (typeof item !== 'object' || item === null) {
+      item = {};
+    } else {
+      item = { ...item };
+    }
     
     // For comma-separated keywords/roles/highlights
     if ((field === 'keywords' || field === 'roles' || field === 'highlights') && typeof value === 'string') {
-      list[index][field] = value.split(',').map(s => s.trim()).filter(Boolean);
+      item[field] = value.split(',').map(s => s.trim()).filter(Boolean);
     } else {
-      list[index][field] = value;
+      item[field] = value;
     }
     
+    list[index] = item;
     updateSection(section, list);
   };
 
@@ -108,39 +119,39 @@ const FormEditor = ({ data, onChange }) => {
             <Plus size={14} /> Add
           </button>
         </div>
-        {(formData.work || []).map((item, i) => (
+        {(Array.isArray(formData.work) ? formData.work : []).map((item, i) => (
           <div key={i} className="form-card">
             <div className="form-card-header">
-              <h4>{item.company || 'New Company'}</h4>
+              <h4>{item?.company || 'New Company'}</h4>
               <button className="icon-btn delete-btn" onClick={() => removeArrayItem('work', i)}><Trash2 size={16} /></button>
             </div>
             <div className="form-row">
               <div className="form-group">
                 <label>Company</label>
-                <input type="text" value={item.company || ''} onChange={e => updateArrayItem('work', i, 'company', e.target.value)} />
+                <input type="text" value={item?.company || ''} onChange={e => updateArrayItem('work', i, 'company', e.target.value)} />
               </div>
               <div className="form-group">
                 <label>Position</label>
-                <input type="text" value={item.position || ''} onChange={e => updateArrayItem('work', i, 'position', e.target.value)} />
+                <input type="text" value={item?.position || ''} onChange={e => updateArrayItem('work', i, 'position', e.target.value)} />
               </div>
             </div>
             <div className="form-row">
               <div className="form-group">
                 <label>Start Date</label>
-                <input type="text" value={item.startDate || ''} onChange={e => updateArrayItem('work', i, 'startDate', e.target.value)} />
+                <input type="text" value={item?.startDate || ''} onChange={e => updateArrayItem('work', i, 'startDate', e.target.value)} />
               </div>
               <div className="form-group">
                 <label>End Date</label>
-                <input type="text" value={item.endDate || ''} onChange={e => updateArrayItem('work', i, 'endDate', e.target.value)} />
+                <input type="text" value={item?.endDate || ''} onChange={e => updateArrayItem('work', i, 'endDate', e.target.value)} />
               </div>
             </div>
             <div className="form-group">
               <label>Summary</label>
-              <textarea rows="2" value={item.summary || ''} onChange={e => updateArrayItem('work', i, 'summary', e.target.value)}></textarea>
+              <textarea rows="2" value={item?.summary || ''} onChange={e => updateArrayItem('work', i, 'summary', e.target.value)}></textarea>
             </div>
             <div className="form-group">
               <label>Highlights (comma separated)</label>
-              <CommaSeparatedInput rows="3" value={item.highlights} onChange={val => updateArrayItem('work', i, 'highlights', val)} />
+              <CommaSeparatedInput rows="3" value={item?.highlights} onChange={val => updateArrayItem('work', i, 'highlights', val)} />
             </div>
           </div>
         ))}
@@ -153,32 +164,32 @@ const FormEditor = ({ data, onChange }) => {
             <Plus size={14} /> Add
           </button>
         </div>
-        {(formData.education || []).map((item, i) => (
+        {(Array.isArray(formData.education) ? formData.education : []).map((item, i) => (
           <div key={i} className="form-card">
             <div className="form-card-header">
-              <h4>{item.institution || 'New Institution'}</h4>
+              <h4>{item?.institution || 'New Institution'}</h4>
               <button className="icon-btn delete-btn" onClick={() => removeArrayItem('education', i)}><Trash2 size={16} /></button>
             </div>
             <div className="form-row">
               <div className="form-group">
                 <label>Institution</label>
-                <input type="text" value={item.institution || ''} onChange={e => updateArrayItem('education', i, 'institution', e.target.value)} />
+                <input type="text" value={item?.institution || ''} onChange={e => updateArrayItem('education', i, 'institution', e.target.value)} />
               </div>
               <div className="form-group">
                 <label>Area of Study</label>
-                <input type="text" value={item.area || ''} onChange={e => updateArrayItem('education', i, 'area', e.target.value)} />
+                <input type="text" value={item?.area || ''} onChange={e => updateArrayItem('education', i, 'area', e.target.value)} />
               </div>
             </div>
             <div className="form-row">
               <div className="form-group">
                 <label>Study Type</label>
-                <input type="text" placeholder="e.g. Bachelor's" value={item.studyType || ''} onChange={e => updateArrayItem('education', i, 'studyType', e.target.value)} />
+                <input type="text" placeholder="e.g. Bachelor's" value={item?.studyType || ''} onChange={e => updateArrayItem('education', i, 'studyType', e.target.value)} />
               </div>
               <div className="form-group">
                 <label>Dates</label>
                 <div style={{display:'flex', gap:'8px'}}>
-                  <input type="text" placeholder="Start" value={item.startDate || ''} onChange={e => updateArrayItem('education', i, 'startDate', e.target.value)} />
-                  <input type="text" placeholder="End" value={item.endDate || ''} onChange={e => updateArrayItem('education', i, 'endDate', e.target.value)} />
+                  <input type="text" placeholder="Start" value={item?.startDate || ''} onChange={e => updateArrayItem('education', i, 'startDate', e.target.value)} />
+                  <input type="text" placeholder="End" value={item?.endDate || ''} onChange={e => updateArrayItem('education', i, 'endDate', e.target.value)} />
                 </div>
               </div>
             </div>
@@ -193,19 +204,19 @@ const FormEditor = ({ data, onChange }) => {
             <Plus size={14} /> Add
           </button>
         </div>
-        {(formData.skills || []).map((item, i) => (
+        {(Array.isArray(formData.skills) ? formData.skills : []).map((item, i) => (
           <div key={i} className="form-card">
             <div className="form-card-header">
-              <h4>{item.name || 'New Skill Group'}</h4>
+              <h4>{item?.name || 'New Skill Group'}</h4>
               <button className="icon-btn delete-btn" onClick={() => removeArrayItem('skills', i)}><Trash2 size={16} /></button>
             </div>
             <div className="form-group">
               <label>Skill Category Name</label>
-              <input type="text" value={item.name || ''} onChange={e => updateArrayItem('skills', i, 'name', e.target.value)} />
+              <input type="text" value={item?.name || ''} onChange={e => updateArrayItem('skills', i, 'name', e.target.value)} />
             </div>
             <div className="form-group">
               <label>Keywords (comma separated)</label>
-              <CommaSeparatedInput value={item.keywords} onChange={val => updateArrayItem('skills', i, 'keywords', val)} />
+              <CommaSeparatedInput value={item?.keywords} onChange={val => updateArrayItem('skills', i, 'keywords', val)} />
             </div>
           </div>
         ))}
@@ -218,33 +229,33 @@ const FormEditor = ({ data, onChange }) => {
             <Plus size={14} /> Add
           </button>
         </div>
-        {(formData.projects || []).map((item, i) => (
+        {(Array.isArray(formData.projects) ? formData.projects : []).map((item, i) => (
           <div key={i} className="form-card">
             <div className="form-card-header">
-              <h4>{item.name || 'New Project'}</h4>
+              <h4>{item?.name || 'New Project'}</h4>
               <button className="icon-btn delete-btn" onClick={() => removeArrayItem('projects', i)}><Trash2 size={16} /></button>
             </div>
             <div className="form-row">
               <div className="form-group">
                 <label>Project Name</label>
-                <input type="text" value={item.name || ''} onChange={e => updateArrayItem('projects', i, 'name', e.target.value)} />
+                <input type="text" value={item?.name || ''} onChange={e => updateArrayItem('projects', i, 'name', e.target.value)} />
               </div>
               <div className="form-group">
                 <label>URL</label>
-                <input type="text" value={item.url || ''} onChange={e => updateArrayItem('projects', i, 'url', e.target.value)} />
+                <input type="text" value={item?.url || ''} onChange={e => updateArrayItem('projects', i, 'url', e.target.value)} />
               </div>
             </div>
             <div className="form-group">
               <label>Roles (comma separated)</label>
-              <CommaSeparatedInput value={item.roles} onChange={val => updateArrayItem('projects', i, 'roles', val)} />
+              <CommaSeparatedInput value={item?.roles} onChange={val => updateArrayItem('projects', i, 'roles', val)} />
             </div>
             <div className="form-group">
               <label>Description</label>
-              <textarea rows="2" value={item.description || ''} onChange={e => updateArrayItem('projects', i, 'description', e.target.value)}></textarea>
+              <textarea rows="2" value={item?.description || ''} onChange={e => updateArrayItem('projects', i, 'description', e.target.value)}></textarea>
             </div>
             <div className="form-group">
               <label>Highlights (comma separated)</label>
-              <CommaSeparatedInput rows="3" value={item.highlights} onChange={val => updateArrayItem('projects', i, 'highlights', val)} />
+              <CommaSeparatedInput rows="3" value={item?.highlights} onChange={val => updateArrayItem('projects', i, 'highlights', val)} />
             </div>
           </div>
         ))}

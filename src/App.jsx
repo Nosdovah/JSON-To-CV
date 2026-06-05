@@ -2,19 +2,21 @@ import { useState, useRef, useEffect } from 'react';
 import CVPreview from './components/CVPreview';
 import JSONEditor from './components/JSONEditor';
 import FormEditor from './components/FormEditor';
-import { Download, Upload } from 'lucide-react';
+import { Download, Upload, FileText } from 'lucide-react';
 import defaultData from './data/defaultData.json';
+import { parsePdf, extractCvData } from './utils/pdfParser';
 import './App.css';
 
 const SESSION_KEY = 'cv_builder_session_data';
 const SESSION_TIME_KEY = 'cv_builder_session_timestamp';
 const ONE_HOUR = 60 * 60 * 1000;
+const INITIAL_TIME = Date.now();
 
 function App() {
   const loadInitialData = () => {
     try {
       const savedTime = localStorage.getItem(SESSION_TIME_KEY);
-      if (savedTime && (Date.now() - parseInt(savedTime, 10) < ONE_HOUR)) {
+      if (savedTime && (INITIAL_TIME - parseInt(savedTime, 10) < ONE_HOUR)) {
         const savedData = localStorage.getItem(SESSION_KEY);
         if (savedData) {
           return JSON.parse(savedData);
@@ -32,7 +34,9 @@ function App() {
   const [editorMode, setEditorMode] = useState('json');
   const [error, setError] = useState('');
   const [warning, setWarning] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
+  const pdfInputRef = useRef(null);
 
   useEffect(() => {
     try {
@@ -62,7 +66,7 @@ function App() {
       
       const schemaWarning = checkSchema(parsed);
       setWarning(schemaWarning);
-    } catch (err) {
+    } catch {
       setError('Invalid JSON syntax');
       setWarning('');
     }
@@ -95,7 +99,7 @@ function App() {
         
         const schemaWarning = checkSchema(parsed);
         setWarning(schemaWarning);
-      } catch (err) {
+      } catch {
         setError('Invalid JSON format in file');
         setWarning('');
       }
@@ -111,12 +115,46 @@ function App() {
     fileInputRef.current?.click();
   };
 
+  const handlePdfUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setIsLoading(true);
+      setError('');
+      setWarning('Extracting text from PDF...');
+      
+      const arrayBuffer = await file.arrayBuffer();
+      const text = await parsePdf(arrayBuffer);
+      const extractedData = extractCvData(text);
+      
+      setJsonText(JSON.stringify(extractedData, null, 2));
+      setCvData(extractedData);
+      
+      const schemaWarning = checkSchema(extractedData);
+      setWarning(schemaWarning || 'PDF parsed successfully. Please verify the extracted data.');
+    } catch (err) {
+      console.error(err);
+      setError('Failed to parse PDF file');
+      setWarning('');
+    } finally {
+      setIsLoading(false);
+      if (pdfInputRef.current) {
+        pdfInputRef.current.value = '';
+      }
+    }
+  };
+
+  const triggerPdfUpload = () => {
+    pdfInputRef.current?.click();
+  };
+
   return (
     <div className="app-container">
       <header className="app-header">
         <div className="logo">
           <img src={`${import.meta.env.BASE_URL}JSON-DOCIFY-Photoroom.png`} alt="JSON-DOCIFY Logo" className="logo-img" />
-          <h1>JSON-DOCIFY</h1>
+          <h1>Make Your CV</h1>
         </div>
         <button className="export-btn" onClick={handlePrint}>
           <Download size={18} />
@@ -140,18 +178,32 @@ function App() {
               </div>
               {error && <span className="error-badge">{error}</span>}
               {warning && !error && <span className="warning-badge">{warning}</span>}
+              {isLoading && <span className="warning-badge">Loading...</span>}
             </div>
-            <button className="upload-btn" onClick={triggerFileUpload} title="Upload JSON File">
-              <Upload size={16} />
-              <span>Upload</span>
-            </button>
-            <input 
-              type="file" 
-              accept=".json" 
-              style={{ display: 'none' }} 
-              ref={fileInputRef}
-              onChange={handleFileUpload}
-            />
+            <div className="upload-buttons">
+              <button className="upload-btn" onClick={triggerPdfUpload} title="Upload PDF File" disabled={isLoading}>
+                <FileText size={16} />
+                <span>Upload PDF</span>
+              </button>
+              <input 
+                type="file" 
+                accept=".pdf" 
+                style={{ display: 'none' }} 
+                ref={pdfInputRef}
+                onChange={handlePdfUpload}
+              />
+              <button className="upload-btn" onClick={triggerFileUpload} title="Upload JSON File" disabled={isLoading}>
+                <Upload size={16} />
+                <span>Upload JSON</span>
+              </button>
+              <input 
+                type="file" 
+                accept=".json" 
+                style={{ display: 'none' }} 
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+              />
+            </div>
           </div>
           {editorMode === 'json' ? (
             <JSONEditor value={jsonText} onChange={handleJsonChange} />

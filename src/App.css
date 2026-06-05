@@ -134,6 +134,11 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
+.upload-buttons {
+  display: flex;
+  gap: 8px;
+}
+
 .upload-btn {
   display: flex;
   align-items: center;
